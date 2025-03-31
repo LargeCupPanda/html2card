@@ -1,0 +1,2600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='bgGradient' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231a1d2b'/><stop offset='100%' stop-color='%23282c40'/></linearGradient><linearGradient id='glowGradient' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%233a86ff'/><stop offset='100%' stop-color='%238338ec'/></linearGradient></defs><circle cx='32' cy='32' r='30' fill='url(%23bgGradient)' stroke='url(%23glowGradient)' stroke-width='1.5'/><g><path d='M22 20 L16 32 L22 44' fill='none' stroke='%233a86ff' stroke-width='2.5' stroke-linecap='round'/><path d='M42 20 L48 32 L42 44' fill='none' stroke='%238338ec' stroke-width='2.5' stroke-linecap='round'/><rect x='27' y='26' width='4' height='4' rx='1' fill='%2306d6a0'/><rect x='33' y='26' width='4' height='4' rx='1' fill='%2306d6a0'/><path d='M25 35 C25 35, 32 39, 39 35' fill='none' stroke='%2306d6a0' stroke-width='2.5' stroke-linecap='round'/></g></svg>">
+  <title>视觉专家</title>
+  <!-- 引入外部库 -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --secondary: #8338ec;
+      --success: #06d6a0;
+      --dark: #1a1d2b;
+      --light: #f8f9fa;
+      --border-radius: 12px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
+    }
+    
+    body {
+      background-color: var(--dark);
+      color: var(--light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    /* 增强科技感的 header 动画 */
+    .header {
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        rgba(58, 134, 255, 0.05) 0%,
+        rgba(131, 56, 236, 0.05) 100%
+      );
+      z-index: -1;
+      transform: rotate(-15deg);
+      animation: shiftBackground 15s infinite alternate ease-in-out;
+      will-change: transform;
+    }
+    
+    @keyframes shiftBackground {
+      0% {
+        transform: rotate(-15deg) translateY(-10px);
+      }
+      100% {
+        transform: rotate(-12deg) translateY(10px);
+      }
+    }
+    
+    .title-container {
+      position: relative;
+      margin-bottom: 15px;
+      min-height: 2rem;
+    }
+    
+    .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      position: relative;
+      letter-spacing: 1px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    
+    /* 修正打字机效果的光标 */
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background-color: #fff;
+      margin-left: 2px;
+      animation: blink 1s infinite;
+      vertical-align: middle;
+    }
+    
+    /* 光标闪烁动画 */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    
+    .glitch-effect {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(58, 134, 255, 0.2);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      opacity: 0;
+    }
+    
+    @keyframes glitch {
+      0% { transform: translate(0); opacity: 0; }
+      20% { transform: translate(-2px, 2px); opacity: 0.3; }
+      40% { transform: translate(-2px, -2px); opacity: 0; }
+      60% { transform: translate(2px, 2px); opacity: 0.3; }
+      80% { transform: translate(2px, -2px); opacity: 0; }
+      100% { transform: translate(0); opacity: 0; }
+    }
+    
+    .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, 
+        rgba(58, 134, 255, 0) 0%, 
+        rgba(58, 134, 255, 0.8) 50%, 
+        rgba(58, 134, 255, 0) 100%);
+      top: 0;
+      left: 0;
+      opacity: 0;
+      animation: scanDown 3s ease-in-out forwards;
+      pointer-events: none;
+    }
+    
+    @keyframes scanDown {
+      0% { top: 0; opacity: 0.7; }
+      100% { top: 100%; opacity: 0; }
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 增强设置面板和按钮样式 */
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;
+      width: 350px;
+      height: 100vh;
+      background: rgba(28, 30, 40, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 25px;
+      box-shadow: -5px 0 25px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99;
+      overflow-y: auto;
+      border-left: 1px solid rgba(58, 134, 255, 0.2);
+    }
+    
+    .settings-panel.active {
+      right: 0;
+    }
+    
+    .settings-title {
+      font-size: 1.3rem;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(58, 134, 255, 0.2);
+      color: rgba(255, 255, 255, 0.9);
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .settings-title::before {
+      content: "⚙️";
+      margin-right: 10px;
+      color: var(--primary);
+    }
+    
+    .settings-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: rgba(30, 32, 44, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(58, 134, 255, 0.3);
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 100;
+      box-shadow: 0 0 10px rgba(58, 134, 255, 0.2);
+    }
+    
+    .settings-toggle:hover {
+      background: rgba(58, 134, 255, 0.2);
+      transform: rotate(30deg);
+    }
+    
+    .settings-toggle svg {
+      transition: all 0.3s ease;
+    }
+    
+    .settings-toggle:hover svg {
+      stroke: white;
+    }
+    
+    /* 提高点击区域的灵敏度 */
+    .settings-toggle::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      bottom: -10px;
+      left: -10px;
+      cursor: pointer;
+    }
+    
+    /* 点击动画 */
+    .settings-toggle.clicked {
+      animation: clickPulse 0.3s ease;
+    }
+    
+    @keyframes clickPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    
+    /* 表单元素美化 */
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      background: rgba(22, 24, 33, 0.7);
+      border: 1px solid rgba(58, 134, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px 15px;
+      color: var(--light);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 0 rgba(58, 134, 255, 0);
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(22, 24, 33, 0.9);
+      box-shadow: 0 0 10px rgba(58, 134, 255, 0.2);
+    }
+    
+    /* 文本区域样式 */
+    .form-textarea {
+      width: 100%;
+      min-height: 150px;
+      background: rgba(22, 24, 33, 0.7);
+      border: 1px solid rgba(58, 134, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px 15px;
+      color: var(--light);
+      font-size: 0.85rem;
+      font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', monospace;
+      resize: vertical;
+      transition: all 0.3s ease;
+      line-height: 1.5;
+    }
+    
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(22, 24, 33, 0.9);
+      box-shadow: 0 0 10px rgba(58, 134, 255, 0.2);
+    }
+    
+    /* 统一所有区域标题栏样式 */
+    .code-header, .input-header, .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0;
+      background: rgba(30, 32, 44, 0.95);
+      padding: 10px 15px;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      border: 1px solid rgba(58, 134, 255, 0.2);
+      border-bottom: none;
+      box-shadow: 0 -2px 15px rgba(131, 56, 236, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .code-header::after, .input-header::after, .preview-header::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        rgba(58, 134, 255, 0) 0%, 
+        rgba(58, 134, 255, 0.1) 50%, 
+        rgba(58, 134, 255, 0) 100%);
+      animation: codeHeaderSweep 4s infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes codeHeaderSweep {
+      0% { left: -50%; }
+      100% { left: 150%; }
+    }
+    
+    .code-title, .input-title, .preview-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .code-title::before, .input-title::before, .preview-title::before {
+      font-family: monospace;
+      margin-right: 8px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    
+    .code-title::before {
+      content: "{ }";
+    }
+    
+    .input-title::before {
+      content: "// ";
+    }
+    
+    .preview-title::before {
+      content: "▶ ";
+    }
+    
+    /* 输入区域容器 */
+    .input-section {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    /* 输入框滚动条隐藏 */
+    .text-input {
+      width: 100%;
+      min-height: 100px;
+      padding: 15px;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      border: 1px solid rgba(58, 134, 255, 0.2);
+      background: rgba(22, 24, 33, 0.7);
+      color: var(--light);
+      font-size: 1rem;
+      resize: vertical;
+      transition: var(--transition);
+      scrollbar-width: none; /* Firefox */
+    }
+    
+    .text-input::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+    
+    .text-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(22, 24, 33, 0.9);
+      box-shadow: 0 0 10px rgba(58, 134, 255, 0.2);
+    }
+    
+    /* 生成按钮增强 */
+    .generate-btn {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .generate-btn::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: rotate(45deg);
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+    
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(58, 134, 255, 0.3);
+    }
+    
+    .generate-btn:hover::after {
+      animation: buttonGlow 1.5s infinite;
+      opacity: 1;
+    }
+    
+    @keyframes buttonGlow {
+      0% { left: -50%; }
+      100% { left: 100%; }
+    }
+    
+    .generate-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 30px 0;
+    }
+    
+    .loading-dots {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      opacity: 0.3;
+    }
+    
+    .dot.active {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .code-section {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    
+    /* 代码容器增强 */
+    .code-container {
+      position: relative;
+      background: rgba(22, 24, 33, 0.95);
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      border: 1px solid rgba(58, 134, 255, 0.2);
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(58, 134, 255, 0.1) inset;
+    }
+    
+    .code-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      z-index: 1;
+    }
+    
+    /* 修复问题1和2：HTML代码显示区域滚动效果和禁止选择 */
+    .code-editor {
+      width: 100%;
+      height: 300px;
+      padding: 15px;
+      color: #f8f8f2;
+      font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      tab-size: 2;
+      white-space: pre-wrap;
+      word-break: break-all;
+      overflow-y: hidden; /* 隐藏滚动条 */
+      position: relative;
+      counter-reset: line;
+      user-select: none; /* 禁止选择文本 */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      pointer-events: none; /* 禁止交互 */
+      will-change: transform;
+    }
+    
+    /* 创建一个内部容器用于自动滚动展示 */
+    .code-scroll-container {
+      width: 100%;
+      height: auto;
+      position: relative;
+      transform: translateY(calc(300px - 100%));
+      transition: transform 0.1s ease-out;
+    }
+    
+    /* 代码区域滚动条美化 */
+    .code-editor::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    .code-editor::-webkit-scrollbar-track {
+      background: rgba(22, 24, 33, 0.2);
+      border-radius: 4px;
+    }
+    
+    .code-editor::-webkit-scrollbar-thumb {
+      background: rgba(58, 134, 255, 0.3);
+      border-radius: 4px;
+    }
+    
+    .code-editor::-webkit-scrollbar-thumb:hover {
+      background: rgba(58, 134, 255, 0.5);
+    }
+    
+    /* 代码编辑器光标动画增强 */
+    .code-editor .blinking-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background-color: rgba(58, 134, 255, 0.7);
+      margin-left: 2px;
+      animation: blinkCoder 1.2s infinite;
+      vertical-align: middle;
+      border-radius: 1px;
+      box-shadow: 0 0 5px rgba(58, 134, 255, 0.5);
+    }
+    
+    @keyframes blinkCoder {
+      0%, 100% { opacity: 1; height: 1.2em; }
+      40% { opacity: 0.8; height: 1.2em; }
+      50% { opacity: 0.5; height: 0.8em; }
+      60% { opacity: 0.8; height: 1.2em; }
+    }
+    
+    /* 代码高亮效果 */
+    .hljs {
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    /* 增强按钮科技感样式 */
+    .code-btn, .preview-btn {
+      background: rgba(30, 32, 44, 0.8);
+      border: 1px solid rgba(58, 134, 255, 0.4);
+      border-radius: 4px;
+      padding: 6px 12px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 70px;
+      box-shadow: 0 0 8px rgba(58, 134, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    
+    .code-btn:hover, .preview-btn:hover {
+      background: rgba(58, 134, 255, 0.25);
+      border-color: rgba(58, 134, 255, 0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 0 12px rgba(58, 134, 255, 0.2);
+    }
+        
+    .code-btn:active, .preview-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 5px rgba(58, 134, 255, 0.1) inset;
+    }
+        
+    /* 科技感动态效果 */
+    .sci-fi-code-effect {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+    
+    .scanner-line {
+      position: absolute;
+      top: -10%;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(180deg, 
+        rgba(58, 134, 255, 0) 0%, 
+        rgba(58, 134, 255, 0.1) 50%, 
+        rgba(58, 134, 255, 0) 100%);
+      opacity: 0.7;
+      z-index: 1;
+      animation: scannerMove 3s linear infinite;
+      will-change: transform;
+    }
+    
+    @keyframes scannerMove {
+      0% { top: -10%; }
+      100% { top: 100%; }
+    }
+    
+    .preview-section {
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+    
+    /* 预览区域增强 - 禁用滚动条 */
+    .preview-container {
+      background: white;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      border: 1px solid rgba(58, 134, 255, 0.2);
+      position: relative;
+      width: 100%;
+      overflow: hidden; /* 确保容器也不会显示滚动条 */
+    }
+    
+    .preview-frame {
+      width: 100%;
+      min-height: 100px;
+      border: none;
+      background: white;
+      overflow: hidden; /* 禁用滚动条 */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+    }
+    
+    .preview-frame::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .empty-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 400px;
+      text-align: center;
+      color: #333;
+      background: #f5f5f5;
+    }
+    
+    .empty-preview-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: #ccc;
+    }
+    
+    .empty-preview-text {
+      max-width: 250px;
+      font-size: 0.9rem;
+      color: #888;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    .waves {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      z-index: -1;
+      opacity: 0.5;
+    }
+    
+    .copy-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 1rem;
+      display: none;
+      animation: fadeInOut 1.5s ease forwards;
+      z-index: 1000;
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    
+    .copy-hint {
+      display: none;
+    }
+    
+    @media (max-width: 600px) {
+      .title {
+        font-size: 1.1rem;
+      }
+      
+      .settings-panel {
+        width: 300px;
+        right: -300px;
+      }
+      
+      .code-editor {
+        font-size: 0.8rem;
+      }
+
+      /* 移动端按钮优化 */
+      .code-actions, .preview-actions {
+        gap: 8px;
+      }
+      
+      .code-btn, .preview-btn {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+      }
+    }
+    
+    @keyframes animateDot {
+      0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    
+    /* html2canvas辅助 */
+    #temp-canvas {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+   
+    /* 修复按钮区域布局 */
+    .code-actions, .preview-actions {
+      display: flex;
+      gap: 10px;
+      flex-direction: row; /* 确保按钮水平排列 */
+      align-items: center;
+      min-width: 160px; /* 确保有足够的空间放置按钮 */
+      justify-content: flex-end;
+    }
+
+    /* 添加按钮内部光效 */
+    .code-btn::after, .preview-btn::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: rotate(45deg);
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+
+    .code-btn:hover::after, .preview-btn:hover::after {
+      animation: buttonSweep 1.5s infinite;
+      opacity: 1;
+    }
+
+    @keyframes buttonSweep {
+      0% { left: -50%; }
+      100% { left: 100%; }
+    }
+
+    /* 确保标题栏布局正确 */
+    .code-header, .input-header, .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      flex-wrap: nowrap; /* 防止换行 */
+    }
+
+    /* 确保标题文本不会过长导致挤压按钮 */
+    .code-title, .input-title, .preview-title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 10px;
+    }
+
+    .highlight-section {
+      animation: highlightPulse 1.5s ease;
+    }
+
+    @keyframes highlightPulse {
+      0% { box-shadow: 0 0 0 rgba(58, 134, 255, 0); }
+      50% { box-shadow: 0 0 25px rgba(58, 134, 255, 0.5); }
+      100% { box-shadow: 0 0 0 rgba(58, 134, 255, 0); }
+    }
+    
+    /* 设置说明样式 */
+    .setting-guide {
+      margin-top: 15px;
+      margin-bottom: 25px;
+      background: rgba(22, 24, 33, 0.7);
+      border: 1px solid rgba(58, 134, 255, 0.2);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .setting-guide-header {
+      padding: 10px 15px;
+      background: rgba(30, 32, 44, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid rgba(58, 134, 255, 0.2);
+    }
+    
+    .setting-guide-header:hover {
+      background: rgba(30, 32, 44, 0.9);
+    }
+    
+    .setting-guide-icon {
+      color: var(--primary);
+      font-size: 1rem;
+    }
+    
+    .setting-guide-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .setting-guide-arrow {
+      margin-left: auto;
+      transition: transform 0.3s ease;
+    }
+    
+    .setting-guide-content {
+      max-height: 0;
+      padding: 0 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .setting-guide.open .setting-guide-content {
+      max-height: 800px;
+      padding: 15px;
+    }
+    
+    .setting-guide.open .setting-guide-arrow {
+      transform: rotate(180deg);
+    }
+    
+    .guide-section {
+      margin-bottom: 15px;
+    }
+    
+    .guide-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .guide-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    
+    .guide-text {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 10px;
+    }
+    
+    .api-model-list {
+      font-size: 0.8rem;
+      padding-left: 15px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .api-model-item {
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .model-provider {
+      font-weight: 600;
+      color: var(--success);
+    }
+    
+    .model-url {
+      font-family: monospace;
+      background: rgba(22, 24, 33, 0.9);
+      padding: 3px 6px;
+      border-radius: 4px;
+      margin-top: 3px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.75rem;
+    }
+    
+    /* 高级设置分隔线 */
+    .settings-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        rgba(58, 134, 255, 0.05) 0%, 
+        rgba(58, 134, 255, 0.3) 50%,
+        rgba(58, 134, 255, 0.05) 100%);
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .settings-divider::after {
+      content: "高级设置";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(28, 30, 40, 0.95);
+      padding: 0 10px;
+      font-size: 0.8rem;
+      color: rgba(58, 134, 255, 0.8);
+    }
+    
+    /* 页脚样式 */
+    .footer {
+      background: rgba(26, 29, 43, 0.95);
+      padding: 15px 0;
+      text-align: center;
+      margin-top: 40px;
+      border-top: 1px solid rgba(58, 134, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        rgba(58, 134, 255, 0) 0%, 
+        rgba(58, 134, 255, 0.8) 50%, 
+        rgba(58, 134, 255, 0) 100%);
+      animation: footerScan 3s infinite linear;
+    }
+    
+    @keyframes footerScan {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .footer-content a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+      padding: 0 3px;
+    }
+    
+    .footer-content a:hover {
+      color: var(--secondary);
+    }
+    
+    .footer-content a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+    
+    .footer-content a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* 移动端优化样式 */
+    @media (max-width: 480px) {
+      /* 优化触摸区域尺寸 */
+      .code-btn, .preview-btn, .generate-btn {
+        min-height: 44px; /* 确保触摸目标足够大 */
+      }
+
+      /* 确保设置面板在小屏幕上不会超出可见区域 */
+      .settings-panel {
+        width: 85%;
+        right: -85%;
+      }
+
+      /* 优化进度条显示 */
+      .progress-text {
+        font-size: 0.8rem;
+      }
+    }
+    
+    /* 活动状态的按钮样式 - 移动端触摸反馈 */
+    .code-btn.active, .preview-btn.active, .generate-btn.active {
+      background: rgba(58, 134, 255, 0.4);
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+    <path fill="rgba(58, 134, 255, 0.2)" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,181.3C384,203,480,213,576,192C672,171,768,117,864,101.3C960,85,1056,107,1152,122.7C1248,139,1344,149,1392,154.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <path fill="rgba(131, 56, 236, 0.2)" fill-opacity="1" d="M0,192L48,208C96,224,192,256,288,240C384,224,480,160,576,149.3C672,139,768,181,864,213.3C960,245,1056,267,1152,250.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+  </svg>
+
+  <button class="settings-toggle" id="settingsToggle">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
+  </button>
+
+  <div class="settings-panel" id="settingsPanel">
+    <h3 class="settings-title">设置</h3>
+    
+    <!-- 设置说明折叠面板 -->
+    <div class="setting-guide" id="settingGuide">
+      <div class="setting-guide-header" id="settingGuideHeader">
+        <span class="setting-guide-icon">ⓘ</span>
+        <span class="setting-guide-title">查看设置说明</span>
+        <span class="setting-guide-arrow">▼</span>
+      </div>
+      <div class="setting-guide-content">
+        <div class="guide-section">
+          <div class="guide-title">API格式说明</div>
+          <div class="guide-text">本项目使用OpenAI兼容接口，可支持多种大模型厂商的API。</div>
+          <div class="guide-text">API调用格式：模型厂商提供的基础URL + "/chat/completions"。例如：</div>
+          <div class="guide-text">如果调用地址是 https://api.example.com/v1/chat/completions，则API Base URL填写: <span class="model-url">https://api.example.com/v1</span></div>
+        </div>
+        
+        <div class="guide-section">
+          <div class="guide-title">常见模型厂商API地址</div>
+          <ul class="api-model-list">
+            <li class="api-model-item">
+              <span class="model-provider">OpenAI</span>
+              <span class="model-url">https://api.openai.com/v1</span>
+            </li>
+            <li class="api-model-item">
+              <span class="model-provider">DeepSeek</span>
+              <span class="model-url">https://api.deepseek.com/v1</span>
+            </li>
+            <li class="api-model-item">
+              <span class="model-provider">MiniMax</span>
+              <span class="model-url">https://api.minimax.chat/v1</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="guide-section">
+          <div class="guide-title">常用模型标识</div>
+          <div class="guide-text">请根据所选API厂商，填入相应的模型标识，如：</div>
+          <ul class="api-model-list">
+            <li class="api-model-item">
+              <span class="model-provider">OpenAI</span>
+              <span class="model-url">gpt-4-turbo, gpt-4, gpt-3.5-turbo</span>
+            </li>
+            <li class="api-model-item">
+              <span class="model-provider">DeepSeek</span>
+              <span class="model-url">deepseek-chat, deepseek-coder</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="guide-section">
+          <div class="guide-title">设置存储</div>
+          <div class="guide-text">所有设置将保存在浏览器本地存储中，仅在当前设备有效。</div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-title">截图快捷方法</div>
+          <div class="guide-text">视觉效果预览区域内，鼠标右击即可自动复制。</div>
+        </div>
+        
+        <div class="guide-section">
+          <div class="guide-title">高级设置</div>
+          <div class="guide-text">Max Token: 控制模型生成的最大令牌数量，默认为8192。</div>
+          <div class="guide-text">System Prompt: 自定义系统提示词，用于指导AI的生成方向和风格。</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="apiKey">API Key</label>
+      <input type="password" id="apiKey" class="form-input" placeholder="sk-..." autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="apiBase">API Base URL</label>
+      <input type="text" id="apiBase" class="form-input" placeholder="https://api.deepseek.com/v1" value="https://api.deepseek.com/v1">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="apiModel">模型</label>
+      <input type="text" id="apiModel" class="form-input" placeholder="deepseek-chat" value="deepseek-chat">
+    </div>
+    
+    <!-- 添加分隔线 -->
+    <div class="settings-divider"></div>
+    
+    <!-- 添加 Max Token 设置 -->
+    <div class="form-group">
+      <label class="form-label" for="maxToken">Max Token</label>
+      <input type="number" id="maxToken" class="form-input" placeholder="8192" value="8192" min="1000" max="32000">
+    </div>
+    
+    <!-- 添加 System Prompt 设置 -->
+    <div class="form-group">
+      <label class="form-label" for="systemPrompt">System Prompt</label>
+      <textarea id="systemPrompt" class="form-textarea" placeholder="自定义系统提示词..."></textarea>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="scan-line"></div>
+    <div class="title-container">
+      <h1 class="title" id="title"></h1>
+      <span class="typing-cursor" id="typingCursor"></span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="input-section">
+      <div class="input-header">
+        <div class="input-title">输入区域</div>
+      </div>
+      <textarea id="textInput" class="text-input" placeholder="请输入你想要可视化的创意内容、概念或数据..."></textarea>
+      <button id="generateBtn" class="generate-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+        </svg>
+        开始想象
+      </button>
+    </div>
+
+    <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+      <div class="loading-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <div id="progressText" class="progress-text">正在初始化...</div>
+    </div>
+
+    <div id="codeSection" class="code-section" style="display: none;">
+      <div class="code-header">
+        <div class="code-title">HTML</div>
+        <div class="code-actions">
+          <button id="copyCodeBtn" class="code-btn">复制</button>
+          <button id="downloadBtn" class="code-btn">下载</button>
+        </div>
+      </div>
+      <div class="code-container">
+        <pre id="codeEditor" class="code-editor"><span class="blinking-cursor"></span></pre>
+      </div>
+    </div>
+
+    <div id="previewSection" class="preview-section" style="display: none;">
+      <div class="preview-header">
+        <div class="preview-title">视觉效果</div>
+        <div class="preview-actions">
+          <button id="refreshPreviewBtn" class="code-btn">刷新</button>
+          <button id="fullscreenBtn" class="code-btn">全屏</button>
+        </div>
+      </div>
+      <div class="preview-container">
+        <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>作者：熊猫大侠 | 公众号：PandaAI | <a href="https://svg.easy2ai.com/" target="_blank">SVG渲染</a></p>
+    </div>
+  </footer>
+
+  <div id="copyToast" class="copy-toast">已复制为图片到剪贴板</div>
+  <div id="toast" class="toast"></div>
+  
+  <!-- 临时画布用于截图 -->
+  <canvas id="temp-canvas" width="800" height="600"></canvas>
+
+  <script>
+    // 默认的System Prompt
+    const DEFAULT_SYSTEM_PROMPT = `# 角色：视觉信息熵优化师 (Visual Information Entropy Optimizer)
+
+## 定位:
+你是一位顶尖的 AI 视觉传达专家，融合了信息理论与设计心理学。你专注于将用户输入的文本信息（想法、概念、数据等）转化为在移动端（竖屏）上具有**最高信息传达效率（最低信息熵）**与**最强视觉吸引力**的体验。你的核心任务是设计并生成单一、完整、自包含的 HTML 文件，通过最优化的视觉元素（布局、色彩、排版、图形、动效等）组合，不仅确保信息被用户快速、准确、深刻地理解和吸收，更能**在第一时间抓住用户眼球，激发其深入了解的欲望**。
+
+## 核心任务:
+1.  **深度解析与信息熵评估 (融入 5W):**
+    *   彻底分析用户输入的文本内容，识别核心信息、关键要素、内在逻辑和潜在情感。
+    *   **显式或隐式地评估信息的 5W 要素（Who-目标受众是谁？What-核心信息是什么？Why-为何重要/目的是什么？When/Where-发生的背景/情境是怎样的？），确保视觉设计能有效传递这些上下文，减少接收端的模糊性和理解成本。**
+    *   评估不同视觉表现形式可能带来的信息损耗，选择熵最低且最具吸引力的路径。
+2.  **最优视觉策略构思 (兼顾吸引力与效率):**
+    *   基于内容特性和 5W 分析，自主构思并决策最合适的视觉风格（不限于简约、科技、拟物、抽象、情感化等）、布局结构、色彩方案、字体搭配、图形元素（如图标、CSS 图形）。
+    *   **优先创造引人入胜的视觉焦点和流畅的视觉引导，运用对比、动感、惊喜感等元素激发用户好奇心。**
+    *   考虑加入必要的微交互或动画（如果能显著增强信息表现力、降低理解难度或提升趣味性，而非单纯炫技）。
+    *   所有选择的**双重标准**是：**最大化信息传递清晰度（低熵）**与**最大化视觉吸引力和用户参与度**。
+3.  **移动端优先设计与实现:** 所有设计必须严格遵循移动端优先原则，确保在典型的手机竖屏尺寸（例如 360px-480px 宽度）上具有完美的布局、可读性、易用性和视觉冲击力。
+4.  **生成单一自包含 HTML 文件:**
+    *   使用 HTML 构建语义化结构。
+    *   将所有 CSS 样式代码内联在  <head>  的  <style>  标签内。
+    *   如果绝对必要（为实现关键视觉表达、交互或增强吸引力），将 JavaScript 代码内联在  <body>  末尾的  <script>  标签内。
+    *   确保生成的 HTML 文件是完全独立的，无需任何外部文件（CSS, JS, 图片等）。如有必要，使用 Data URI 等方式嵌入资源（例如小的 SVG 图标）。
+    *   代码需简洁、高效、符合标准。
+
+## 输出要求:
+*   **绝对纯净:** **只** 输出完整的 HTML 代码。
+*   **格式严格:** 代码必须从  <!DOCTYPE html>  开始，并以  </html>  结束。
+*   **无任何冗余:** **严禁** 在代码之外添加任何解释、说明、注释、标题、代码块标记（如    html ...    ）或任何形式的非 HTML 文本。哪怕是一个多余的空格或标点符号也不允许出现在代码主体之外。
+
+## 关键原则与约束:
+*   **双核驱动：信息熵最低 & 视觉吸引力最强:** 这是设计的根本出发点和最终衡量标准。清晰传达是基础，吸引眼球是前提。
+*   **5W 上下文感知:** 设计需体现对信息背景（受众、目的、情境等）的理解。
+*   **移动端竖屏为核心:** 视觉效果的评估基准是移动设备的竖屏展示。
+*   **技术服务于目标:** 仅在能显著提升信息传达效率、表现力或吸引力的前提下，才引入更复杂的技术。避免干扰信息核心的过度设计。
+*   **自主决策与优化:** 你需要独立判断并选择最佳视觉方案。
+*   **情感与调性匹配:** 视觉风格和元素选择需与信息内容的情感基调和严肃程度相匹配。`;
+    
+    // 性能相关常量
+    const HIGHLIGHT_DELAY = 1000; // 代码高亮延迟时间(300ms) 
+    const UPDATE_CHUNK_SIZE = 200; // 更新代码前需要累积的字符数
+    const DOM_UPDATE_INTERVAL = 1000; // DOM更新间隔(250ms) 
+    
+    // 打字机效果保持不变
+    document.addEventListener('DOMContentLoaded', () => {
+      // 设置要显示的标题文本
+      const titleText = "输入任意创意，一键激活AI视觉渲染引擎";
+      const titleEl = document.getElementById('title');
+      const cursor = document.getElementById('typingCursor');
+      
+      // 重新实现打字机效果
+      let charIndex = 0;
+      function typeWriter() {
+        if (charIndex < titleText.length) {
+          titleEl.textContent += titleText.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeWriter, 50); // 调整速度
+        }
+      }
+      
+      // 开始打字机效果
+      typeWriter();
+      
+      // 定期触发故障效果 - 减少频率以提高性能
+      setInterval(() => {
+        const glitchEffect = document.querySelector('.glitch-effect');
+        if (glitchEffect) {
+          glitchEffect.style.animation = 'glitch 0.4s forwards';
+          setTimeout(() => {
+            glitchEffect.style.animation = 'none';
+          }, 400);
+        }
+      }, 10000); // 从5000改为10000
+      
+      // 每隔一段时间添加一个扫描线 - 减少频率以提高性能
+      setInterval(() => {
+        const header = document.querySelector('.header');
+        const scanLine = document.createElement('div');
+        scanLine.className = 'scan-line';
+        header.appendChild(scanLine);
+        
+        setTimeout(() => {
+          header.removeChild(scanLine);
+        }, 3000);
+      }, 15000); // 从10000改为15000
+      
+      // 加载设置
+      loadSettings();
+      
+      // 修复设置按钮点击问题
+      const settingsToggle = document.getElementById('settingsToggle');
+      const settingsPanel = document.getElementById('settingsPanel');
+      
+      settingsToggle.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
+        settingsPanel.classList.toggle('active');
+        
+        // 添加轻微动画效果
+        this.classList.add('clicked');
+        setTimeout(() => {
+          this.classList.remove('clicked');
+        }, 300);
+      });
+      
+      // 新增: 设置说明折叠/展开功能
+      const settingGuide = document.getElementById('settingGuide');
+      const settingGuideHeader = document.getElementById('settingGuideHeader');
+      
+      if (settingGuideHeader) {
+        settingGuideHeader.addEventListener('click', function() {
+          settingGuide.classList.toggle('open');
+        });
+      }
+      
+      // 设置System Prompt的默认值
+      const systemPromptTextarea = document.getElementById('systemPrompt');
+      if (systemPromptTextarea && !systemPromptTextarea.value) {
+        systemPromptTextarea.placeholder = "留空将使用默认的系统提示词...";
+      }
+    });
+    
+    // 保存设置到本地存储 - 防抖优化
+    const saveSettings = debounce(function() {
+      const apiKey = document.getElementById('apiKey').value;
+      const apiBase = document.getElementById('apiBase').value;
+      const apiModel = document.getElementById('apiModel').value;
+      const maxToken = document.getElementById('maxToken').value;
+      const systemPrompt = document.getElementById('systemPrompt').value;
+      
+      const settings = {
+        apiKey,
+        apiBase,
+        apiModel,
+        maxToken,
+        systemPrompt
+      };
+      
+      localStorage.setItem('openaiSettings', JSON.stringify(settings));
+      showToast('设置已保存');
+    }, 500);
+    
+    // 从本地存储加载设置 - 使用try-catch防止错误中断
+    function loadSettings() {
+      try {
+        const settingsStr = localStorage.getItem('openaiSettings');
+        if (settingsStr) {
+          const settings = JSON.parse(settingsStr);
+          
+          if (document.getElementById('apiKey')) {
+            document.getElementById('apiKey').value = settings.apiKey || '';
+          }
+          
+          if (document.getElementById('apiBase')) {
+            document.getElementById('apiBase').value = settings.apiBase || 'https://api.deepseek.com/v1';
+          }
+          
+          if (document.getElementById('apiModel')) {
+            document.getElementById('apiModel').value = settings.apiModel || 'deepseek-chat';
+          }
+          
+          // 设置新增的字段
+          if (document.getElementById('maxToken')) {
+            document.getElementById('maxToken').value = settings.maxToken || '8192';
+          }
+          
+          if (document.getElementById('systemPrompt')) {
+            document.getElementById('systemPrompt').value = settings.systemPrompt || '';
+          }
+        }
+      } catch (error) {
+        console.error('加载设置失败:', error);
+        // 恢复默认设置
+        if (document.getElementById('apiBase')) {
+          document.getElementById('apiBase').value = 'https://api.deepseek.com/v1';
+        }
+        if (document.getElementById('apiModel')) {
+          document.getElementById('apiModel').value = 'deepseek-chat';
+        }
+        if (document.getElementById('maxToken')) {
+          document.getElementById('maxToken').value = '8192';
+        }
+      }
+    }
+    
+    // 显示通知提示
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+    
+    // 显示复制成功的提示 - 减少不必要的DOM操作
+    function showCopyToast() {
+      const copyToast = document.getElementById('copyToast');
+      copyToast.style.display = 'block';
+      
+      setTimeout(() => {
+        copyToast.style.display = 'none';
+      }, 1500);
+    }
+    
+    // 在输入框外点击隐藏设置面板
+    document.addEventListener('click', (event) => {
+      const settingsPanel = document.getElementById('settingsPanel');
+      const settingsToggle = document.getElementById('settingsToggle');
+      
+      if (!settingsPanel.contains(event.target) && event.target !== settingsToggle) {
+        settingsPanel.classList.remove('active');
+      }
+    });
+    
+    // 保存API设置当输入改变时 - 使用统一的防抖函数
+    document.getElementById('apiKey').addEventListener('input', saveSettings);
+    document.getElementById('apiBase').addEventListener('input', saveSettings);
+    document.getElementById('apiModel').addEventListener('input', saveSettings);
+    document.getElementById('maxToken').addEventListener('input', saveSettings);
+    document.getElementById('systemPrompt').addEventListener('input', saveSettings);
+    
+    // 动画加载指示器 - 减少CPU使用
+    function startLoadingAnimation() {
+      const dots = document.querySelectorAll('.dot');
+      dots.forEach((dot, index) => {
+        dot.style.animation = `animateDot 1.5s ${index * 0.2}s infinite`;
+      });
+    }
+    
+    // 停止加载动画
+    function stopLoadingAnimation() {
+      const dots = document.querySelectorAll('.dot');
+      dots.forEach(dot => {
+        dot.style.animation = 'none';
+      });
+    }
+    
+    // 更新进度条 - 使用requestAnimationFrame优化
+    const updateProgress = (function() {
+      let lastUpdateTime = 0;
+      let pendingUpdate = null;
+      
+      return function(percent, text) {
+        // 取消任何挂起的更新
+        if (pendingUpdate) {
+          cancelAnimationFrame(pendingUpdate);
+        }
+        
+        const now = Date.now();
+        // 如果距离上次更新不到50ms，推迟更新
+        if (now - lastUpdateTime < 50) {
+          pendingUpdate = requestAnimationFrame(() => {
+            updateProgressImmediate(percent, text);
+            lastUpdateTime = Date.now();
+          });
+        } else {
+          updateProgressImmediate(percent, text);
+          lastUpdateTime = now;
+        }
+      };
+      
+      function updateProgressImmediate(percent, text) {
+        document.getElementById('progressBar').style.width = `${percent}%`;
+        document.getElementById('progressText').textContent = text;
+      }
+    })();
+    
+    // 过滤大模型返回的```html标记 - 进行优化提高处理速度
+    function cleanGeneratedHTML(html) {
+      if (!html) return '';
+      
+      // 快速检查常见标记
+      let cleanedHtml = html.trim();
+      
+      // 移除开头的 ```html 或 ```
+      if (cleanedHtml.startsWith('```html')) {
+        cleanedHtml = cleanedHtml.substring(7).trim();
+      } else if (cleanedHtml.startsWith('```')) {
+        cleanedHtml = cleanedHtml.substring(3).trim();
+      }
+      
+      // 移除结尾的 ```
+      if (cleanedHtml.endsWith('```')) {
+        cleanedHtml = cleanedHtml.substring(0, cleanedHtml.length - 3).trim();
+      }
+      
+      return cleanedHtml;
+    }
+    
+    // 调整iframe高度自适应内容 - 性能优化版本
+    function resizeIframeToContent(iframe) {
+      try {
+        // 确保iframe已加载
+        if (!iframe.contentWindow) return;
+        
+        // 使用requestAnimationFrame延迟执行
+        requestAnimationFrame(() => {
+          try {
+            // 获取内容高度
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            const height = Math.max(
+              doc.body.scrollHeight, 
+              doc.documentElement.scrollHeight,
+              doc.body.offsetHeight,
+              doc.documentElement.offsetHeight,
+              300 // 最小高度
+            );
+            
+            // 设置iframe高度
+            iframe.style.height = height + 'px';
+            
+            // 向iframe内部注入样式，确保内容不会产生滚动条
+            try {
+              // 查看是否已经注入了样式
+              if (!doc.getElementById('no-scroll-style')) {
+                const style = doc.createElement('style');
+                style.id = 'no-scroll-style';
+                style.textContent = `
+                  html, body {
+                    width: 100%;
+                    height: auto;
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden !important; /* 修改为hidden禁用滚动条 */
+                  }
+                  * {
+                    max-width: 100%;
+                    box-sizing: border-box;
+                  }
+                  ::-webkit-scrollbar {
+                    display: none !important; /* 隐藏所有滚动条 */
+                  }
+                  html {
+                    scrollbar-width: none !important; /* Firefox */
+                    -ms-overflow-style: none !important; /* IE and Edge */
+                  }
+                `;
+                doc.head.appendChild(style);
+              }
+            } catch (styleErr) {
+              console.error('注入样式失败:', styleErr);
+            }
+          } catch (innerError) {
+            console.error('调整iframe内容时发生错误:', innerError);
+          }
+        });
+      } catch (err) {
+        console.error('调整iframe高度失败:', err);
+        // 设置默认高度
+        iframe.style.height = '500px';
+      }
+    }
+
+    // 添加平滑滚动到指定元素的函数 - 优化版本使用requestAnimationFrame
+    function smoothScrollTo(element, duration = 800) {
+      // 如果元素不存在，则退出
+      if (!element) return;
+      
+      // 获取元素的位置
+      const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const startPosition = window.pageYOffset;
+      const distance = targetPosition - startPosition;
+      let startTime = null;
+      
+      // 使用requestAnimationFrame实现平滑滚动
+      function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        // 使用缓动函数使滚动更自然
+        const ease = function(t) {
+          return t<0.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
+        };
+        
+        window.scrollTo(0, startPosition + distance * ease(progress));
+        
+        if (timeElapsed < duration) {
+          requestAnimationFrame(animation);
+        }
+      }
+      
+      // 开始动画
+      requestAnimationFrame(animation);
+    }
+    
+    // 创建科技感的滚动指示器 - 使用性能较高的createElement而不是innerHTML
+    function createScrollIndicator() {
+      // 创建容器
+      const indicator = document.createElement('div');
+      indicator.className = 'scroll-indicator';
+      indicator.style.cssText = `
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 30px;
+        background: rgba(30, 32, 44, 0.8);
+        border: 1px solid rgba(58, 134, 255, 0.4);
+        border-radius: 20px;
+        padding: 10px 20px;
+        color: white;
+        font-size: 0.9rem;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        box-shadow: 0 0 15px rgba(58, 134, 255, 0.3);
+      `;
+      
+      // 创建SVG元素
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", "16");
+      svg.setAttribute("height", "16");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor");
+      svg.setAttribute("stroke-width", "2");
+      svg.setAttribute("stroke-linecap", "round");
+      svg.setAttribute("stroke-linejoin", "round");
+      
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", "M12 5v14M19 12l-7 7-7-7");
+      svg.appendChild(path);
+      
+      // 创建文本
+      const span = document.createElement('span');
+      span.textContent = '查看预览效果';
+      
+      // 添加元素到指示器
+      indicator.appendChild(svg);
+      indicator.appendChild(span);
+      
+      // 添加到页面
+      document.body.appendChild(indicator);
+      
+      // 使用setTimeout设置opacity，强制浏览器重绘
+      setTimeout(() => {
+        indicator.style.opacity = '1';
+      }, 100);
+      
+      // 3秒后消失
+      setTimeout(() => {
+        indicator.style.opacity = '0';
+        setTimeout(() => {
+          if (indicator.parentNode) {
+            indicator.parentNode.removeChild(indicator);
+          }
+        }, 500);
+      }, 3000);
+    }
+    
+    // 在生成HTML过程结束后，滚动到预览区域
+    function scrollToPreview() {
+      // 先创建滚动指示器
+      createScrollIndicator();
+      
+      // 获取预览区域元素
+      const previewSection = document.getElementById('previewSection');
+      
+      // 加入一点延迟，确保页面已经完全渲染
+      setTimeout(() => {
+        // 平滑滚动到预览区域
+        smoothScrollTo(previewSection);
+        
+        // 添加高亮效果，吸引注意力
+        previewSection.classList.add('highlight-section');
+        setTimeout(() => {
+          previewSection.classList.remove('highlight-section');
+        }, 1500);
+      }, 500);
+    }
+    
+    // 优化后的代码高亮函数 - 使用节流和缓冲处理
+    const updateCodeWithHighlight = (function() {
+      let lastUpdateTime = 0;
+      let pendingUpdate = null;
+      let codeBuffer = '';
+      
+      // 返回节流函数
+      return function(code) {
+        // 更新缓冲区
+        codeBuffer = code;
+        
+        // 如果已经有挂起的更新，则不再安排新的更新
+        if (pendingUpdate) return;
+        
+        const now = Date.now();
+        
+        // 如果距离上次更新不到HIGHLIGHT_DELAY ms，则推迟更新
+        if (now - lastUpdateTime < HIGHLIGHT_DELAY) {
+          pendingUpdate = setTimeout(() => {
+            performUpdate();
+            pendingUpdate = null;
+          }, HIGHLIGHT_DELAY);
+        } else {
+          // 否则立即更新
+          performUpdate();
+        }
+        
+        function performUpdate() {
+          const codeEditor = document.getElementById('codeEditor');
+          if (!codeEditor) return;
+          
+          // 清理代码内容
+          const cleanedCode = cleanGeneratedHTML(codeBuffer);
+          
+          // 设置原始内容以备复制和导出
+          codeEditor.setAttribute('data-original-code', cleanedCode);
+          
+          // 创建或获取滚动容器
+          let scrollContainer = codeEditor.querySelector('.code-scroll-container');
+          if (!scrollContainer) {
+            scrollContainer = document.createElement('div');
+            scrollContainer.className = 'code-scroll-container';
+            codeEditor.appendChild(scrollContainer);
+          }
+          
+          // 在新的请求动画帧中更新高亮显示，减少主线程阻塞
+          requestAnimationFrame(() => {
+            // 创建高亮代码 - 这是性能瓶颈，通过重复使用DOM优化
+            scrollContainer.innerHTML = hljs.highlight(cleanedCode, {language: 'html'}).value;
+            
+            // 动态效果元素 - 只在第一次创建
+            if (!codeEditor.querySelector('.sci-fi-code-effect')) {
+              const sciEffectDiv = document.createElement('div');
+              sciEffectDiv.className = 'sci-fi-code-effect';
+              
+              const scannerLine = document.createElement('div');
+              scannerLine.className = 'scanner-line';
+              sciEffectDiv.appendChild(scannerLine);
+              
+              codeEditor.appendChild(sciEffectDiv);
+            }
+            
+            // 自动调整滚动位置，保持代码末尾可见
+            if (scrollContainer.offsetHeight > 300) {
+              scrollContainer.style.transform = `translateY(${300 - scrollContainer.offsetHeight}px)`;
+            } else {
+              scrollContainer.style.transform = 'translateY(0)';
+            }
+            
+            // 更新最后更新时间
+            lastUpdateTime = Date.now();
+          });
+        }
+      };
+    })();
+    
+    // 使用html2canvas复制iframe为图片 - 性能优化版本
+    function setupIframeCopy(iframe) {
+      if (!iframe || !iframe.contentDocument) return;
+      
+      // 监听iframe的右键事件，使用防抖减少重复触发
+      const debouncedCapture = debounce(captureAndCopyIframe, 300);
+      
+      iframe.contentDocument.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        debouncedCapture(iframe);
+      });
+      
+      // 监听iframe容器的右键事件
+      iframe.parentNode.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        debouncedCapture(iframe);
+      });
+      
+      // 添加移动端长按事件 - 为移动设备提供复制功能
+      let longPressTimer;
+      const longPressDuration = 500; // 500ms定义为长按
+      
+      // 移动端长按开始
+      iframe.contentDocument.addEventListener('touchstart', function(e) {
+        longPressTimer = setTimeout(() => {
+          debouncedCapture(iframe);
+        }, longPressDuration);
+      }, { passive: true });
+      
+      // 如果触摸移动或结束，取消长按计时器
+      iframe.contentDocument.addEventListener('touchmove', function() {
+        clearTimeout(longPressTimer);
+      }, { passive: true });
+      
+      iframe.contentDocument.addEventListener('touchend', function() {
+        clearTimeout(longPressTimer);
+      }, { passive: true });
+    }
+    
+    // 使用html2canvas进行截图并复制 - 优化版本
+    function captureAndCopyIframe(iframe) {
+      try {
+        // 显示加载提示
+        showToast('正在截图，请稍候...');
+        
+        // 使用setTimeout让UI有时间更新
+        setTimeout(() => {
+          // 使用html2canvas截取iframe内容
+          html2canvas(iframe.contentDocument.body, {
+            allowTaint: true,
+            useCORS: true,
+            scale: 2, // 提高图像质量
+            backgroundColor: '#ffffff', // 确保背景是白色
+            logging: false, // 关闭日志提高性能
+            onclone: (doc) => {
+              // 在克隆的文档中添加样式以改善截图
+              const style = doc.createElement('style');
+              style.textContent = `
+                * { 
+                  -webkit-print-color-adjust: exact !important;
+                  color-adjust: exact !important;
+                }
+              `;
+              doc.head.appendChild(style);
+            }
+          }).then(function(canvas) {
+            // 尝试复制到剪贴板
+            canvas.toBlob(function(blob) {
+              try {
+                // 现代浏览器剪贴板API
+                if (navigator.clipboard && navigator.clipboard.write) {
+                  const clipboardItem = new ClipboardItem({ 'image/png': blob });
+                  navigator.clipboard.write([clipboardItem]).then(function() {
+                    showCopyToast();
+                  }).catch(function(err) {
+                    console.error('复制到剪贴板失败:', err);
+                    fallbackCopy(canvas);
+                  });
+                } else {
+                  fallbackCopy(canvas);
+                }
+              } catch (err) {
+                console.error('复制过程出错:', err);
+                fallbackCopy(canvas);
+              }
+            }, 'image/png', 0.9); // 使用0.9的质量提高性能
+          }).catch(function(error) {
+            console.error('html2canvas截图失败:', error);
+            showToast('截图失败，请重试');
+          });
+        }, 100);
+      } catch (error) {
+        console.error('截图过程发生错误:', error);
+        showToast('截图失败: ' + error.message);
+      }
+    }
+    
+    // 备用的复制方法
+    function fallbackCopy(canvas) {
+      try {
+        // 尝试使用较旧的方法复制
+        canvas.toBlob(function(blob) {
+          const url = URL.createObjectURL(blob);
+          
+          // 尝试为用户提供下载选项
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'preview-' + new Date().getTime() + '.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          
+          showToast('无法直接复制到剪贴板，已将图片下载到您的设备');
+        }, 'image/png', 0.8); // 降低质量以提高性能
+      } catch (e) {
+        console.error('备用复制方法失败:', e);
+        showToast('复制失败，请使用浏览器自带的截图功能');
+      }
+    }
+    
+    // 复制生成的代码 - 使用navigator.clipboard提高性能
+    document.getElementById('copyCodeBtn').addEventListener('click', () => {
+      // 获取代码编辑器的原始内容
+      const codeEditor = document.getElementById('codeEditor');
+      const originalCode = codeEditor.getAttribute('data-original-code') || codeEditor.textContent;
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(originalCode)
+          .then(() => showToast('代码已复制到剪贴板'))
+          .catch(err => {
+            console.error('复制失败:', err);
+            fallbackCodeCopy(originalCode);
+          });
+      } else {
+        fallbackCodeCopy(originalCode);
+      }
+    });
+    
+    // 备用代码复制方法
+    function fallbackCodeCopy(text) {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('代码已复制到剪贴板');
+      } catch (err) {
+        showToast('复制失败，请手动选择代码进行复制');
+      }
+    }
+    
+// 下载HTML文件 - 优化大文件下载处理
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      // 获取代码编辑器的原始内容
+      const codeEditor = document.getElementById('codeEditor');
+      const originalCode = codeEditor.getAttribute('data-original-code') || codeEditor.textContent;
+      
+      try {
+        const blob = new Blob([originalCode], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'generated-visual.html';
+        
+        // 添加到body并立即删除，而不是保持在DOM中
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        
+        // 使用setTimeout延迟清理，确保下载已开始
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url); // 释放内存
+        }, 100);
+        
+        showToast('HTML文件已下载');
+      } catch (err) {
+        console.error('下载文件失败:', err);
+        showToast('下载失败: ' + err.message);
+      }
+    });
+    
+    // 刷新预览功能 - 优化内存使用
+    document.getElementById('refreshPreviewBtn').addEventListener('click', () => {
+      try {
+        // 获取代码编辑器的原始内容
+        const codeEditor = document.getElementById('codeEditor');
+        const originalCode = codeEditor.getAttribute('data-original-code') || codeEditor.textContent;
+        
+        // 创建一个新的iframe元素
+        const newFrame = document.createElement('iframe');
+        newFrame.className = 'preview-frame';
+        newFrame.sandbox = 'allow-scripts allow-same-origin';
+        newFrame.id = 'previewFrame';
+        
+        // 替换旧的iframe
+        const previewContainer = document.querySelector('.preview-container');
+        const oldFrame = document.getElementById('previewFrame');
+        
+        // 在写入内容前安装onload处理程序
+        newFrame.onload = () => {
+          resizeIframeToContent(newFrame);
+          setupIframeCopy(newFrame);
+          
+          // 垃圾回收辅助 - 帮助浏览器释放旧iframe的内存
+          setTimeout(() => {
+            oldFrame && (oldFrame.src = 'about:blank');
+            oldFrame = null;
+          }, 500);
+        };
+        
+        // 替换iframe（更快的DOM操作）
+        if (oldFrame) {
+          previewContainer.replaceChild(newFrame, oldFrame);
+        } else {
+          previewContainer.appendChild(newFrame);
+        }
+        
+        // 写入内容 - 使用更高效的方法
+        const frameDoc = newFrame.contentDocument || newFrame.contentWindow.document;
+        frameDoc.open();
+        // 在写入内容前添加样式，确保滚动条被禁用
+        const noScrollStyles = `<style>
+          html, body { overflow: hidden !important; }
+          ::-webkit-scrollbar { display: none !important; }
+          html { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        </style>`;
+        frameDoc.write(noScrollStyles + originalCode);
+        frameDoc.close();
+        
+        showToast('预览已刷新');
+      } catch (error) {
+        console.error('刷新预览失败:', error);
+        showToast('刷新预览失败: ' + error.message);
+      }
+    });
+    
+    // 全屏查看 - 优化内存使用
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      try {
+        // 获取代码编辑器的原始内容
+        const codeEditor = document.getElementById('codeEditor');
+        const originalCode = codeEditor.getAttribute('data-original-code') || codeEditor.textContent;
+        
+        // 创建一个新窗口并写入内容，使用blob URL提高性能
+        const blob = new Blob([originalCode], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const newWindow = window.open(url, '_blank');
+        
+        // 窗口打开后，释放blob URL
+        if (newWindow) {
+          setTimeout(() => {
+            URL.revokeObjectURL(url);
+          }, 1000);
+        } else {
+          URL.revokeObjectURL(url);
+          showToast('无法打开新窗口，请检查您的弹窗设置');
+        }
+      } catch (error) {
+        showToast('打开全屏视图失败: ' + error.message);
+      }
+    });
+    
+    // 防抖函数，用于减少频繁操作
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+    
+    // 节流函数，用于限制操作频率
+    function throttle(func, limit) {
+      let inThrottle;
+      return function(...args) {
+        if (!inThrottle) {
+          func.apply(this, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    }
+    
+    // 批处理数据缓冲区
+    class BatchBuffer {
+      constructor(batchSize, processCallback) {
+        this.buffer = '';
+        this.batchSize = batchSize;
+        this.processCallback = processCallback;
+      }
+      
+      add(data) {
+        this.buffer += data;
+        if (this.buffer.length >= this.batchSize) {
+          this.flush();
+        }
+      }
+      
+      flush() {
+        if (this.buffer.length > 0) {
+          this.processCallback(this.buffer);
+          this.buffer = '';
+        }
+      }
+    }
+    
+    // 生成HTML视觉化 - 性能优化版本
+    async function generateHTML() {
+      // 获取输入内容
+      const textInput = document.getElementById('textInput').value.trim();
+      if (!textInput) {
+        showToast('请输入需要可视化的文本');
+        return;
+      }
+      
+      // 获取API设置
+      const apiKey = document.getElementById('apiKey').value;
+      if (!apiKey) {
+        showToast('请在设置中填写API Key');
+        document.getElementById('settingsPanel').classList.add('active');
+        return;
+      }
+      
+      const apiBase = document.getElementById('apiBase').value;
+      const apiModel = document.getElementById('apiModel').value;
+      // 获取自定义设置
+      const maxToken = parseInt(document.getElementById('maxToken').value) || 8192;
+      const userSystemPrompt = document.getElementById('systemPrompt').value.trim();
+      // 使用用户提供的系统提示词，如果为空则使用默认的
+      const systemPrompt = userSystemPrompt || DEFAULT_SYSTEM_PROMPT;
+      
+      // 获取DOM元素
+      const generateBtn = document.getElementById('generateBtn');
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const codeSection = document.getElementById('codeSection');
+      const previewSection = document.getElementById('previewSection');
+      const codeEditor = document.getElementById('codeEditor');
+      
+      // 禁用按钮，防止重复点击
+      generateBtn.disabled = true;
+      // 显示加载指示器
+      loadingIndicator.style.display = 'flex';
+      // 显示代码区域
+      codeSection.style.display = 'block';
+      // 隐藏预览区域（将在生成完成后显示）
+      previewSection.style.display = 'none';
+      // 初始化代码编辑器
+      codeEditor.innerHTML = '<span class="blinking-cursor"></span>';
+      
+      // 启动加载动画
+      startLoadingAnimation();
+      updateProgress(10, '正在初始化...');
+      
+      // 性能监控
+      const startTime = performance.now();
+      
+      try {
+        updateProgress(20, '连接中...');
+        
+        // 创建控制器用于可能的中断
+        const controller = new AbortController();
+        const signal = controller.signal;
+        
+        // 设置请求超时（60秒）- 使用更可靠的方法
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error("请求超时，请重试")), 60000);
+        });
+        
+        // 创建API请求
+        const fetchPromise = fetch(`${apiBase}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: apiModel,
+            messages: [
+              {
+                role: 'system',
+                content: systemPrompt
+              },
+              {
+                role: 'user',
+                content: textInput
+              }
+            ],
+            temperature: 1.0,
+            max_tokens: maxToken,
+            stream: true // 启用流式输出
+          }),
+          signal: signal
+        });
+        
+        // 使用Promise.race实现超时控制
+        const response = await Promise.race([fetchPromise, timeoutPromise]);
+        
+        if (!response.ok) {
+          throw new Error(`请求失败: ${response.status} ${response.statusText}`);
+        }
+        
+        updateProgress(40, '正在生成HTML代码...');
+        
+        // 创建一个可读流
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        
+        // 性能优化：创建处理批次的缓冲区
+        let buffer = '';
+        let generatedHTML = '';
+        let lastProgressUpdate = Date.now();
+        let lastDOMUpdate = Date.now();
+        
+        // 创建批处理缓冲区，以减少DOM更新频率
+        const htmlBuffer = new BatchBuffer(UPDATE_CHUNK_SIZE, (accumulated) => {
+          generatedHTML += accumulated;
+          
+          // 限制DOM更新频率
+          const now = Date.now();
+          if (now - lastDOMUpdate > DOM_UPDATE_INTERVAL) {
+            updateCodeWithHighlight(generatedHTML);
+            lastDOMUpdate = now;
+          }
+        });
+        
+        // 流式处理程序
+        async function processStream() {
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              
+              // 解码当前块
+              const chunk = decoder.decode(value, { stream: true });
+              buffer += chunk;
+              
+              // 处理完整行
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || '';
+              
+              for (const line of lines) {
+                if (line.trim() === '') continue;
+                
+                if (line.startsWith('data: ')) {
+                  const data = line.slice(6);
+                  
+                  if (data === '[DONE]') {
+                    continue;
+                  }
+                  
+                  try {
+                    const json = JSON.parse(data);
+                    const content = json.choices[0]?.delta?.content || '';
+                    
+                    if (content) {
+                      // 添加到批处理缓冲区
+                      htmlBuffer.add(content);
+                      
+                      // 限制进度更新频率
+                      const now = Date.now();
+                      if (now - lastProgressUpdate > 200) {
+                        // 使用非线性的进度计算，提供更好的用户体验
+                        const currentLength = generatedHTML.length + htmlBuffer.buffer.length;
+                        const progressPercent = 40 + Math.min(40, Math.log(currentLength + 1) * 5);
+                        updateProgress(progressPercent, '正在生成中...');
+                        lastProgressUpdate = now;
+                      }
+                    }
+                  } catch (e) {
+                    console.warn('解析数据错误，继续处理:', e);
+                  }
+                }
+              }
+              
+              // 移动端的额外优化：定期让出主线程
+              if ('requestIdleCallback' in window) {
+                await new Promise(resolve => requestIdleCallback(resolve));
+              } else {
+                await new Promise(resolve => setTimeout(resolve, 0));
+              }
+            }
+            
+            // 处理剩余的缓冲内容
+            htmlBuffer.flush();
+            
+            // 最终更新DOM显示完整内容
+            updateCodeWithHighlight(generatedHTML);
+            
+            // 完成生成
+            finishGeneration();
+          } catch (error) {
+            if (error.name === 'AbortError') {
+              throw new Error('请求被取消，可能是网络问题或超时');
+            } else {
+              throw error;
+            }
+          }
+        }
+        
+        // 开始处理流
+        await processStream();
+        
+        // 完成流处理后的后续步骤
+        async function finishGeneration() {
+          updateProgress(85, '渲染页面...');
+          
+          // 清理可能包含的```html标记
+          const cleanedHTML = cleanGeneratedHTML(generatedHTML);
+          
+          // 最终代码显示，使用高亮
+          updateCodeWithHighlight(cleanedHTML);
+          
+          // 使用setTimeout减少主线程阻塞
+          setTimeout(async () => {
+            try {
+              // 创建iframe预览
+              await createPreview(cleanedHTML);
+              
+              updateProgress(100, '完成');
+              const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
+              
+              // 显示完成消息，包括性能信息
+              setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+                showToast(`生成完成！用时${totalTime}秒`);
+                
+                // 滚动到预览区域
+                scrollToPreview();
+                
+                // 清理内存
+                setTimeout(() => {
+                  releaseMemory();
+                }, 1000);
+              }, 500);
+            } catch (renderError) {
+              console.error('预览渲染失败:', renderError);
+              showToast('预览渲染失败，但代码已生成。您可以点击下载按钮获取HTML文件');
+              
+              updateProgress(100, '完成（仅代码）');
+              setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+              }, 500);
+            }
+          }, 100);
+        }
+        
+        // 创建预览iframe
+        async function createPreview(htmlContent) {
+          return new Promise((resolve, reject) => {
+            try {
+              // 创建一个新的iframe元素
+              const previewFrame = document.createElement('iframe');
+              previewFrame.className = 'preview-frame';
+              previewFrame.sandbox = 'allow-scripts allow-same-origin';
+              previewFrame.id = 'previewFrame';
+              
+              // 设置加载回调
+              previewFrame.onload = () => {
+                // 显示预览区域
+                previewSection.style.display = 'block';
+                
+                // 调整iframe高度和设置复制功能
+                requestAnimationFrame(() => {
+                  resizeIframeToContent(previewFrame);
+                  setupIframeCopy(previewFrame);
+                  resolve();
+                });
+              };
+              
+              // 替换旧的iframe
+              const previewContainer = document.querySelector('.preview-container');
+              const oldFrame = document.getElementById('previewFrame');
+              if (oldFrame) {
+                previewContainer.replaceChild(previewFrame, oldFrame);
+              } else {
+                previewContainer.appendChild(previewFrame);
+              }
+              
+              // 写入内容 - 延迟写入以避免阻塞UI
+              setTimeout(() => {
+                try {
+                  const frameDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+                  frameDoc.open();
+                  
+                  // 添加禁用滚动条的样式
+                  const noScrollStyles = `<style>
+                    html, body { overflow: hidden !important; }
+                    ::-webkit-scrollbar { display: none !important; }
+                    html { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+                  </style>`;
+                  frameDoc.write(noScrollStyles + htmlContent);
+                  frameDoc.close();
+                } catch (err) {
+                  reject(err);
+                }
+              }, 50);
+            } catch (err) {
+              reject(err);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('生成失败:', error);
+        showToast(`生成失败: ${error.message}`);
+        loadingIndicator.style.display = 'none';
+      } finally {
+        generateBtn.disabled = false;
+        stopLoadingAnimation();
+      }
+    }
+    
+    // 内存释放辅助函数
+    function releaseMemory() {
+      // 移除不必要的大型DOM元素
+      const oldEffects = document.querySelectorAll('.sci-fi-code-effect');
+      oldEffects.forEach(el => {
+        if (el && el.parentNode) {
+          el.parentNode.removeChild(el);
+        }
+      });
+      
+      // 清理大型变量引用
+      if (window.lastGeneratedHTML) {
+        window.lastGeneratedHTML = null;
+      }
+      
+      // 触发垃圾回收（间接方式）
+      setTimeout(() => {
+        if (window.gc) {
+          window.gc();
+        } else {
+          // 在不支持window.gc的浏览器中，创建一些压力
+          const arr = [];
+          for (let i = 0; i < 10000; i++) {
+            arr.push(new Array(10000).fill(0));
+            arr.pop();
+          }
+        }
+      }, 100);
+    }
+    
+    // 生成按钮点击事件 - 增加防抖处理
+    const debouncedGenerate = debounce(() => {
+      generateHTML().catch(error => {
+        console.error('生成过程发生错误:', error);
+        showToast('生成失败: ' + (error.message || '未知错误'));
+      });
+    }, 300);
+    
+    document.getElementById('generateBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      debouncedGenerate();
+    });
+    
+    // 按Enter键也可触发生成
+    document.getElementById('textInput').addEventListener('keydown', (event) => {
+      if (event.ctrlKey && event.key === 'Enter') {
+        event.preventDefault();
+        debouncedGenerate();
+      }
+    });
+    
+    // 移动端优化代码 - 防止iOS橡皮筋效果导致的页面重载
+    document.addEventListener('touchmove', function(e) {
+      if (window.scrollY <= 0 && e.touches[0].screenY > 120) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+    
+    // 防止iOS中页面自动缩放和重新加载
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, { passive: false });
+    
+    // 添加移动端触摸反馈
+    const buttons = document.querySelectorAll('.code-btn, .preview-btn, .generate-btn');
+    buttons.forEach(button => {
+      button.addEventListener('touchstart', function() {
+        this.classList.add('active');
+      }, { passive: true });
+      
+      button.addEventListener('touchend', function() {
+        this.classList.remove('active');
+      }, { passive: true });
+    });
+    
+    // 页面可见性变化处理 - 处理移动端切换应用的情况
+    document.addEventListener('visibilitychange', function() {
+      const generateBtn = document.getElementById('generateBtn');
+      // 当页面重新变为可见时，重置按钮状态（防止按钮卡住）
+      if (document.visibilityState === 'visible' && generateBtn) {
+        generateBtn.disabled = false;
+      }
+    });
+    
+    // 通知用户页面已加载完成，可以开始使用
+    window.addEventListener('load', function() {
+      // 使用延迟通知，确保页面已完全渲染
+      setTimeout(() => {
+        showToast('页面已准备就绪，可以开始创建');
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
